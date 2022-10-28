@@ -7,7 +7,7 @@ from kneed import KneeLocator
 
 df = pd.read_csv("ulabox.csv")
 # %%
-dfp = df[["Baby%", "Home%"]]
+dfp = df[["Food%","Fresh%","Drinks%","Home%","Beauty%","Health%","Baby%","Pets%"]]
 
 ssd = []
 ks = range(1,11)
@@ -24,13 +24,15 @@ k = round(kneedle.knee)
 
 print(f"Number of clusters suggested by knee method: {k}")
 # %%
-kmeans = KMeans(n_clusters=k).fit(df[["Baby%", "Home%"]])
-sns.scatterplot(data=df, x="Baby%", y="Home%", hue=kmeans.labels_)
-plt.show()
+kmeans = KMeans(n_clusters=k).fit(df[["Food%","Fresh%","Drinks%","Home%","Beauty%","Health%","Baby%","Pets%"]])
+#sns.scatterplot(data=df, x="Baby%", y="Home%", hue=kmeans.labels_)
+#plt.show()
 
 # %%
-cluster0 = df[kmeans.labels_==1]
-cluster0.describe()
+df["cluster"] = kmeans.labels_
+cluster0 = df[df.cluster == 0]
+sns.boxplot(data=pd.melt(cluster0[["Food%","Fresh%","Drinks%","Home%","Beauty%","Health%","Baby%","Pets%"]]), x="variable", y="value")
+#cluster0.describe()
 # %%
 df["cluster"] = kmeans.labels_
 sns.boxplot(data=df, x="cluster", y="Home%")
@@ -42,3 +44,9 @@ from sklearn.tree import DecisionTreeClassifier, export_text
 tree = DecisionTreeClassifier()
 tree.fit(df[["Age", "Annual_Income_(k$)", "Spending_Score"]], kmeans.labels_)
 print(export_text(tree, feature_names=["Age", "Annual_Income_(k$)", "Spending_Score"]))
+
+# %%
+cluster0 = df[df.cluster == 3]
+sns.boxplot(data=pd.melt(cluster0[["Food%","Fresh%","Drinks%","Home%","Beauty%","Health%","Baby%","Pets%"]]), x="variable", y="value")
+cluster0.describe()
+# %%
